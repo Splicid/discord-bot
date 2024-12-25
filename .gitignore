@@ -1,0 +1,89 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Pipenv
+Pipfile.lock
+
+# Virtual environments
+# If you're using Pipenv's default virtual environment location
+# This line ignores the virtual environment directory.
+# You can find the exact path by running `pipenv --venv` and adjusting accordingly.
+# Common virtualenv directories:
+# .venv/
+# env/
+# venv/
+# .env/
+.venv/
+env/
+venv/
+# Alternatively, if you have the virtualenv outside the project directory,
+# you might not need to ignore it here.
+
+# Credentials and configuration files
+credentials.json
+token.json
+
+# Environment variables
+.env
+.env.*
+
+# IDEs and editors
+# VS Code
+.vscode/
+
+# Logs and databases
+*.log
+*.sqlite3
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.temp
+
+# Coverage reports
+htmlcov/
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+
+# Environments
+.env/
+.venv/
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Other files to ignore
+.DS_Store
+Thumbs.db

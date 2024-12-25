@@ -1,0 +1,16 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+"discord.py" = "==2.4.0"
+flask = {extras = ["async"], version = "*"}
+google-api-python-client = "*"
+google-auth-httplib2 = "*"
+google-auth-oauthlib = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.11"
