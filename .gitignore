@@ -44,6 +44,7 @@ venv/
 # Credentials and configuration files
 credentials.json
 token.json
+red.json
 
 # Environment variables
 .env
