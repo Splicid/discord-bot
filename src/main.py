@@ -113,7 +113,7 @@ async def on_ready():
 class FlaskThread(threading.Thread):
     def __init__(self, app):
         super().__init__()
-        self.server = make_server("127.0.0.1", 8080, app)
+        self.server = make_server("127.0.0.1", 8250, app)
         self.ctx = app.app_context()
 
     def run(self):
@@ -123,7 +123,7 @@ class FlaskThread(threading.Thread):
 # Start Flask app in a thread
 flask_thread = FlaskThread(app)
 flask_thread.start()
-print("Flask server started on http://127.0.0.1:8080")
+print("Flask server started on http://127.0.0.1:8250")
 
 # Run the bot
 bot.run(DISCORD_KEY)
