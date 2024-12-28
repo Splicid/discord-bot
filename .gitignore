@@ -88,3 +88,6 @@ venv.bak/
 # Other files to ignore
 .DS_Store
 Thumbs.db
+
+# Swap files
+*.swp
