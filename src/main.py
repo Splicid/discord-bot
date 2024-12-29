@@ -2,6 +2,7 @@
 
 import discord
 import os
+import logging
 import threading
 from discord.ext import commands
 from discord.ui import Modal, TextInput, View, Button
@@ -49,7 +50,7 @@ def send_modal_dm():
         bot.loop.create_task(send_modal_to_user(int(user_id)))
         return jsonify({"message": "Modal trigger initiated"}), 200
     except Exception as e:
-        print(f"Error in /modal route: {e}")
+        logging.error(f"Error in /modal route: {e}")
         return jsonify({"error": str(e)}), 500
 
 # Function to Send Modal to User
@@ -57,7 +58,7 @@ async def send_modal_to_user(user_id):
     try:
         user = await bot.fetch_user(user_id)  # Fetch the user by ID
         if not user:
-            print(f"User with ID {user_id} not found.")
+            logging.Warning(f"User with ID {user_id} not found.")
             return
         view = View()  # Create a view to hold the button
 
@@ -74,11 +75,11 @@ async def send_modal_to_user(user_id):
 
         # Send a DM with the button
         await user.send("Click the button below to open the modal:", view=view)
-        print(f"Modal button sent to {user.name} ({user.id}).")
+        logging.info(f"Modal button sent to {user.name} ({user.id}).")
     except discord.Forbidden:
-        print(f"Could not send DM to user {user_id}. They might have DMs disabled.")
+        logging.warning(f"Could not send DM to user {user_id}. They might have DMs disabled.")
     except Exception as e:
-        print(f"Error in sending modal: {e}")
+        logging.critical(f"Error in sending modal: {e}")
 
 # Flask route to handle POST request for sending a message
 @app.route('/send_message', methods=['POST'])
@@ -97,9 +98,9 @@ def send_message_direct():
             calendar_data = calendar.get_cal()
             user = await bot.fetch_user(int(user_id))
             await user.send(calendar_data)
-            print(f"Sent calendar data to {user.name} ({user.id}).")
+            logging.info(f"Sent calendar data to {user.name} ({user.id}).")
         except Exception as e:
-            print(f"Failed to send message: {e}")
+            logging.error(f"Failed to send message: {e}")
     
     bot.loop.create_task(send_dm())
     return jsonify({"status": "Message sent"}), 200
@@ -107,7 +108,7 @@ def send_message_direct():
 # Bot ready event
 @bot.event
 async def on_ready():
-    print(f"Logged in as {bot.user}")
+    logging.info(f"Logged in as {bot.user}")
 
 # Flask thread to run Flask app in parallel with the bot
 class FlaskThread(threading.Thread):
@@ -123,7 +124,7 @@ class FlaskThread(threading.Thread):
 # Start Flask app in a thread
 flask_thread = FlaskThread(app)
 flask_thread.start()
-print("Flask server started on http://127.0.0.1:8250")
+logging.debug("Flask server started on http://127.0.0.1:8250")
 
 # Run the bot
 bot.run(DISCORD_KEY)
