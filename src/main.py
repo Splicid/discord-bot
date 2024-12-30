@@ -15,6 +15,9 @@ DISCORD_KEY = os.getenv("DISCORD_TOKEN")
 if not DISCORD_KEY:
     raise ValueError("DISCORD_TOKEN environment variable not set.")
 
+# Set up logging
+logging.basicConfig(level=logging.DEBUG)
+
 # Set up the bot with intents
 intents = discord.Intents.default()
 intents.messages = True

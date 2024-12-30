@@ -6,6 +6,9 @@ from pathlib import Path
 from googleapiclient.discovery import build
 from google.oauth2 import service_account
 
+# Set up logging
+logging.basicConfig(level=logging.DEBUG)
+
 class Connection:
     def __init__(self):
         self.user = "luis1abreu11@gmail.com"  # Optional: Remove if not used elsewhere
