@@ -1,5 +1,5 @@
 # src/helpers/google_api.py
-
+import logging
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -31,10 +31,10 @@ class Connection:
             )
             
             service = build("calendar", "v3", credentials=credentials)
-            print("Google Calendar service initialized successfully with Service Account.")
+            logging.info("Google Calendar service initialized successfully with Service Account.")
             return service
         except Exception as e:
-            print(f"Failed to create Google Calendar service: {e}")
+            logging.error(f"Failed to create Google Calendar service: {e}")
             raise
 
     def get_cal(self):
@@ -69,5 +69,5 @@ class Connection:
             return "\n".join(todays_events)
         
         except Exception as e:
-            print(f"Error fetching calendar events: {e}")
+            logging.error(f"Error fetching calendar events: {e}")
             return "Failed to retrieve calendar events."

@@ -54,6 +54,7 @@ def send_modal_dm():
         return jsonify({"error": str(e)}), 500
 
 # Function to Send Modal to User
+@app.route('/send_modal', methods=['POST'])
 async def send_modal_to_user(user_id):
     try:
         user = await bot.fetch_user(user_id)  # Fetch the user by ID
@@ -97,6 +98,7 @@ def send_message_direct():
             calendar = Connection()
             calendar_data = calendar.get_cal()
             user = await bot.fetch_user(int(user_id))
+            logging.info(calendar_data)
             await user.send(calendar_data)
             logging.info(f"Sent calendar data to {user.name} ({user.id}).")
         except Exception as e:
@@ -128,8 +130,3 @@ logging.debug("Flask server started on http://127.0.0.1:8250")
 
 # Run the bot
 bot.run(DISCORD_KEY)
-
-### next steps
-# push to github 
-# cp red.json to ubuntu machine
-# pull script in ubuntu machine
