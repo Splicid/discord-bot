@@ -7,70 +7,94 @@ from googleapiclient.discovery import build
 from google.oauth2 import service_account
 
 # Set up logging
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(filename="app.log", level=logging.DEBUG, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+logger = logging.getLogger(__name__)
 
 class Connection:
     def __init__(self):
-        self.user = "luis1abreu11@gmail.com"  # Optional: Remove if not used elsewhere
-        self.service = self._create_service()
-
-    def _create_service(self):
-        """
-        Creates a Google Calendar service using Service Account credentials.
-        """
-        try:
-            # Path to your Service Account JSON key file
-            credentials_path = Path(__file__).parent / 'red.json'
-            
-            if not credentials_path.exists():
-                raise FileNotFoundError(f"Service account file not found at {credentials_path}")
-            
-            # Define the scopes
-            SCOPES = ["https://www.googleapis.com/auth/calendar.readonly"]
-            
-            # Create credentials using the service account
-            credentials = service_account.Credentials.from_service_account_file(
-                str(credentials_path), scopes=SCOPES
+        self.user = "luis1abreu11@gmail.com"  # Calendar ID / Task List ID
+        self.scopes = ["https://www.googleapis.com/auth/calendar.readonly", "https://www.googleapis.com/auth/tasks.readonly", 
+                       "https://www.googleapis.com/auth/tasks", "https://www.googleapis.com/auth/calendar"]
+        self._credentials = service_account.Credentials.from_service_account_file(
+                str(Path(__file__).parent / 'red.json'), scopes=self.scopes
             )
-            
-            service = build("calendar", "v3", credentials=credentials)
-            logging.info("Google Calendar service initialized successfully with Service Account.")
-            return service
-        except Exception as e:
-            logging.error(f"Failed to create Google Calendar service: {e}")
-            raise
+        self.calendar_service = self._calendar_service()
+        self.task_service = self._task_service()
+        
+        # Path to your Service Account JSON key file
+        credentials_path = Path(__file__).parent / 'red.json'
+        
+        if not credentials_path.exists():
+            raise FileNotFoundError(f"Service account file not found at {credentials_path}")
+
+        
+    def _task_service(self):
+        task_service = build("tasks", "v1", credentials=self._credentials)
+        return task_service
+
+    def _calendar_service(self):
+        service = build("calendar", "v3", credentials=self._credentials)
+        return service
 
     def get_cal(self):
+        """
+        Fetches today's events from the Google Calendar.
+        Returns:
+            List of event dictionaries.
+        """
         try:
             # Current UTC time
             now = datetime.now(timezone.utc)
-            now_iso = now.isoformat()
             
             # Start of today in UTC
             start_of_today = now.replace(hour=0, minute=0, second=0, microsecond=0).isoformat()
-
+            # End of today in UTC
+            end_of_today = now.replace(hour=23, minute=59, second=59, microsecond=999999).isoformat()
+            
             # Fetch events from the calendar
-            event_results = self.service.events().list(
+            event_results = self.calendar_service.events().list(
                 calendarId=self.user,
                 timeMin=start_of_today,
-                timeMax=now_iso,
+                timeMax=end_of_today,
                 maxResults=10,
                 singleEvents=True,
                 orderBy="startTime",
             ).execute()
 
             events = event_results.get("items", [])
+            #logging.info(f'Events: {events}')
             if not events:
-                return "No upcoming events found for today."
+                logger.info("No upcoming events found for today.")
+                return []
             
-            # Use list comprehension for efficiency and readability
-            todays_events = [
-                f"{event['start'].get('dateTime', event['start'].get('date'))} - {event.get('summary', 'No Title')}"
-                for event in events
-            ]
-            
-            return "\n".join(todays_events)
+            logger.info(f"Fetched {len(events)} events from the calendar.")
+            return events  # Return the list of event dicts
         
         except Exception as e:
-            logging.error(f"Error fetching calendar events: {e}")
-            return "Failed to retrieve calendar events."
+            logger.error(f"Error fetching calendar events: {e}")
+            return []
+
+
+    def get_tasks(self):
+        """
+        Fetches today's tasks from Google Tasks.
+        Returns:
+            List of task dictionaries.
+        """
+        try:
+            # Fetch tasks from the task list
+            task_results = self.task_service.tasks().list(tasklist="@default", maxResults=10).execute()
+
+            tasks = task_results.get("items", [])
+            logger.info(task_results)
+            if not tasks:
+                logger.info("No tasks found for today.")
+                return []
+            
+            logger.info(f"Fetched {len(tasks)} tasks from Google Tasks.")
+            return tasks  # Return the list of task dicts
+        
+        except Exception as e:
+            logger.error(f"Error fetching tasks: {e}")
+            return []
+
