@@ -4,6 +4,7 @@ import discord
 import os
 import logging
 import threading
+from datetime import datetime
 from discord.ext import commands
 from discord.embeds import Embed
 from discord.ui import Modal, TextInput, View, Button
@@ -103,14 +104,19 @@ def send_calendar():
                 else:
                     logger.error(f"User with ID {user_id} not found.")
                 return
+            
             # Create embed with tasks
             embed = Embed(title="Today's Tasks", color=0x3498db)
+
+            # Add each task as a field in the embed
             for idx, event in enumerate(tasks, start=1):
                 start = event['start'].get('dateTime', event['start'].get('date'))
                 summary = event.get('summary', 'No Title')
                 embed.add_field(name=f"{idx}. {summary}", value=start, inline=False)
+
             # Create the View with 'Done' buttons
             view = TaskDoneView(tasks)
+
             # Fetch user and send
             user = await bot.fetch_user(int(user_id))
             if user is None:
@@ -155,10 +161,13 @@ def send_message_direct():
             
             # Create embed with tasks
             embed = Embed(title="Today's Tasks", color=0x3498db)
+            readable_time = "%B %d, %Y at %I:%M %p %Z"
             for idx, event in enumerate(tasks, start=1):
                 start = event['start'].get('dateTime', event['start'].get('date'))
-                summary = event.get('summary', 'No Title')
-                embed.add_field(name=f"{idx}. {summary}", value=start, inline=False)
+                parsed_datetime = datetime.fromisoformat(start)
+                readable_datetime = parsed_datetime.strftime(readable_time)
+                summary = event.get('summary')
+                embed.add_field(name=f"{idx}. {summary}", value=readable_datetime, inline=False)
 
             # Create the View with 'Done' buttons
             view = TaskDoneView(tasks)
@@ -216,7 +225,7 @@ async def on_ready():
 class FlaskThread(threading.Thread):
     def __init__(self, app):
         super().__init__()
-        self.server = make_server("127.0.0.1", 8250, app)
+        self.server = make_server("127.0.0.1", 8080, app)
         self.ctx = app.app_context()
 
     def run(self):
@@ -226,7 +235,7 @@ class FlaskThread(threading.Thread):
 # Start Flask app in a thread
 flask_thread = FlaskThread(app)
 flask_thread.start()
-logger.debug(f"Flask server started on http://127.0.0.1:8250")
+logger.debug(f"Flask server started on http://127.0.0.1:8080")
 
 # Run the bot
 bot.run(DISCORD_KEY)
