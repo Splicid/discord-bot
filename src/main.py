@@ -55,6 +55,9 @@ def create_button_callback(task_id, task_name):
             calendar = Connection()
             event = calendar.calendar_service.events().get(calendarId=calendar.user, eventId=task_id).execute()
             event['status'] = 'cancelled'  # Mark as cancelled or any other status
+
+            # Update calendar event color to green
+            event['colorId'] = 9
             updated_event = calendar.calendar_service.events().update(calendarId=calendar.user, eventId=task_id, body=event).execute()
             
             # Inform the user
