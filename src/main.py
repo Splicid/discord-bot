@@ -54,15 +54,15 @@ def create_button_callback(task_id, task_name):
             # Update Google Calendar
             calendar = Connection()
             event = calendar.calendar_service.events().get(calendarId=calendar.user, eventId=task_id).execute()
-            event['status'] = 'cancelled'  # Mark as cancelled or any other status
+            #event['status'] = 'cancelled'  # Mark as cancelled or any other status
 
             # Update calendar event color to green
-            event['colorId'] = 9
+            event['colorId'] = 2  # Green color
             updated_event = calendar.calendar_service.events().update(calendarId=calendar.user, eventId=task_id, body=event).execute()
             
             # Inform the user
-            await interaction.response.send_message(f"Task '{task_name}' has been marked as done and updated in your calendar.", ephemeral=True)
-            logger.info(f"Task '{task_name}' marked as done and updated in calendar.")
+            await interaction.response.send_message(f"Task '{task_name}' has been marked green as done and updated in your calendar.", ephemeral=True)
+            logger.info(f"Task '{task_name}' marked green as done and updated in calendar.")
             
             # Optionally, edit the original embed to reflect the completion
             # Note: Editing the message requires storing a reference to it
