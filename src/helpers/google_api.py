@@ -47,7 +47,7 @@ class Connection:
             now = datetime.now(timezone.utc) 
             
             # Start of today in UTC
-            start_of_today = now.replace(hour=0, minute=0, second=0, microsecond=0).isoformat()
+            start_of_today = now.replace(hour=0, minute=0, second=10, microsecond=10).isoformat()
             # End of today in UTC
             end_of_today = now.replace(hour=23, minute=59, second=59, microsecond=999999).isoformat()
             
